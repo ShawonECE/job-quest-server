@@ -67,9 +67,13 @@ async function run() {
     });
 
     app.get('/', async (req, res) => {
-      res.send('Welcome to phoneDB');
+      res.send('Welcome to jobQuest');
     });
     
+    app.get('/jobs', async (req, res) => {
+        const result = await coll.find().toArray();
+        res.send(result);
+      });
   } 
   finally {
     
