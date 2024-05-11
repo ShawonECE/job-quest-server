@@ -73,7 +73,13 @@ async function run() {
     app.get('/jobs', async (req, res) => {
         const result = await coll.find().toArray();
         res.send(result);
-      });
+    });
+
+    app.get('/jobs/:id', async (req, res) => {
+        const id = new ObjectId(req.params.id);
+        const result = await coll.findOne({ _id: id });
+        res.send(result);
+    });
   } 
   finally {
     
