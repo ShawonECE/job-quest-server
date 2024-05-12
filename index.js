@@ -35,6 +35,7 @@ const client = new MongoClient(uri, {
 
 const db = client.db("jobQuest");
 const coll = db.collection("jobs");
+const collApplication = db.collection("applications");
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
@@ -84,6 +85,12 @@ async function run() {
     app.post('/', async (req, res) => {
         const data = req.body;
         const result = await coll.insertOne(data);
+        res.send(result);
+    });
+
+    app.post('/application', async (req, res) => {
+        const data = req.body;
+        const result = await collApplication.insertOne(data);
         res.send(result);
     });
   } 
