@@ -103,6 +103,12 @@ async function run() {
         }
         res.send(result);
     });
+
+    app.delete('/:id', async (req, res) => {
+        const id = new ObjectId(req.params.id);
+        const result = await coll.deleteOne({_id: id});
+        res.send(result);
+    });
   } 
   finally {
     
