@@ -80,6 +80,12 @@ async function run() {
         const result = await coll.findOne({ _id: id });
         res.send(result);
     });
+
+    app.post('/', async (req, res) => {
+        const data = req.body;
+        const result = await coll.insertOne(data);
+        res.send(result);
+    });
   } 
   finally {
     
