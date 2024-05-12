@@ -72,7 +72,9 @@ async function run() {
     });
     
     app.get('/jobs', async (req, res) => {
-        const result = await coll.find().toArray();
+        const email = req.query?.email;
+        let query = email? { "posted_by.email" : email} : {};
+        const result = await coll.find(query).toArray();
         res.send(result);
     });
 
@@ -91,6 +93,14 @@ async function run() {
     app.post('/application', async (req, res) => {
         const data = req.body;
         const result = await collApplication.insertOne(data);
+        if (result.insertedId) {
+            const updateJob = {
+                $inc: {
+                    number_of_applicants: 1,
+                },
+            };
+            const newResult = await coll.updateOne({_id: new ObjectId(req.body.job_id)}, updateJob);
+        }
         res.send(result);
     });
   } 
