@@ -109,6 +109,24 @@ async function run() {
         const result = await coll.deleteOne({_id: id});
         res.send(result);
     });
+
+    app.patch('/:id', async (req, res) => {
+        const data = req.body;
+        const id = new ObjectId(req.params.id);
+        const updateDoc = {
+            $set: {
+                job_title: data.job_title,
+                job_img: data.job_img,
+                job_category: data.job_category,
+                job_description: data.job_description,
+                number_of_applicants: data.number_of_applicants,
+                deadline: data.deadline,
+                salary_range: data.salary_range
+            },
+        };
+        const result = await coll.updateOne({_id: id}, updateDoc, { upsert: true });
+        res.send(result);
+    });
   } 
   finally {
     
