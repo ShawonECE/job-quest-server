@@ -36,6 +36,7 @@ const client = new MongoClient(uri, {
 const db = client.db("jobQuest");
 const coll = db.collection("jobs");
 const collApplication = db.collection("applications");
+const collStories = db.collection("stories");
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
@@ -82,6 +83,11 @@ async function run() {
         const email = req.query?.email;
         let query = { email : email};
         const result = await collApplication.find(query).toArray();
+        res.send(result);
+    });
+
+    app.get('/stories', async (req, res) => {
+        const result = await collStories.find().toArray();
         res.send(result);
     });
 
