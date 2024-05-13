@@ -63,7 +63,6 @@ async function run() {
     });
 
     app.post('/logout', (req, res) => {
-        console.log('logged out');
         res.clearCookie('token', { ...cookieOptions, maxAge: 0 }).send({success: true});
     });
 
@@ -86,8 +85,11 @@ async function run() {
         res.send(result);
     });
 
-    app.get('/applications', async (req, res) => {
+    app.get('/applications', verifyToken, async (req, res) => {
         const email = req.query?.email;
+        if (email !== req.user.data) {
+            return res.status(403).send({message: 'Forbidden access'});
+        }
         let query = { email : email};
         const result = await collApplication.find(query).toArray();
         res.send(result);
