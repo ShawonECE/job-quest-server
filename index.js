@@ -40,7 +40,6 @@ const collStories = db.collection("stories");
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
-  console.log(token);
   if (!token) {
     return res.status(401).send({message: 'unauthorized access'});
   }
@@ -64,7 +63,7 @@ async function run() {
     });
 
     app.post('/logout', (req, res) => {
-        console.log('logged out', req.body.email);
+        console.log('logged out');
         res.clearCookie('token', { ...cookieOptions, maxAge: 0 }).send({success: true});
     });
 
@@ -73,8 +72,16 @@ async function run() {
     });
     
     app.get('/jobs', async (req, res) => {
-        const email = req.query?.email;
-        let query = email? { "posted_by.email" : email} : {};
+        const result = await coll.find().toArray();
+        res.send(result);
+    });
+
+    app.get('/my-jobs', verifyToken, async (req, res) => {
+        const email = req.query.email;
+        if (email !== req.user.data) {
+            return res.status(403).send({message: 'Forbidden access'});
+        }
+        let query = { "posted_by.email" : email};
         const result = await coll.find(query).toArray();
         res.send(result);
     });
