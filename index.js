@@ -78,6 +78,13 @@ async function run() {
         res.send(result);
     });
 
+    app.get('/applications', async (req, res) => {
+        const email = req.query?.email;
+        let query = { email : email};
+        const result = await collApplication.find(query).toArray();
+        res.send(result);
+    });
+
     app.get('/jobs/:id', async (req, res) => {
         const id = new ObjectId(req.params.id);
         const result = await coll.findOne({ _id: id });
