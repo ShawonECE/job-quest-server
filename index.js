@@ -9,7 +9,7 @@ const app = express();
 // middlewares
 app.use(cors(
   {
-    origin: ['http://localhost:5173', 'https://job-quest-15948.web.app/', 'https://job-quest-15948.firebaseapp.com/'],
+    origin: ['http://localhost:5173', 'https://job-quest-15948.web.app', 'https://job-quest-15948.firebaseapp.com'],
     credentials: true
   }
 ));
@@ -54,7 +54,7 @@ const verifyToken = (req, res, next) => {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     app.post('/jwt', async (req, res) => {
       const user = req.body.user;
