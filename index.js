@@ -9,7 +9,7 @@ const app = express();
 // middlewares
 app.use(cors(
   {
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://job-quest-15948.web.app/', 'https://job-quest-15948.firebaseapp.com/'],
     credentials: true
   }
 ));
