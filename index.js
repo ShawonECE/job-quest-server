@@ -5,11 +5,12 @@ require('dotenv').config();
 const cors = require('cors');
 const port = process.env.PORT || 3000;
 const app = express();
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 // middlewares
 app.use(cors(
   {
-    origin: ['http://localhost:5173', 'https://job-quest-15948.web.app', 'https://job-quest-15948.firebaseapp.com'],
+    origin: ['http://localhost:5173', 'https://job-quest-15948.web.app', 'https://job-quest-15948.firebaseapp.com', 'https://job-quest1.netlify.app'],
     credentials: true
   }
 ));
@@ -37,14 +38,18 @@ const db = client.db("jobQuest");
 const coll = db.collection("jobs");
 const collApplication = db.collection("applications");
 const collStories = db.collection("stories");
+const collPremium = db.collection("premium");
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
+  console.log(token);
   if (!token) {
+    console.log('No token');
     return res.status(401).send({message: 'unauthorized access'});
   }
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
+      console.log('Invalid token');
       return res.status(401).send({message: 'unauthorized access'});
     }
     req.user = decoded;
@@ -54,7 +59,7 @@ const verifyToken = (req, res, next) => {
 
 async function run() {
   try {
-    // await client.connect();
+    await client.connect();
 
     app.post('/jwt', async (req, res) => {
       const user = req.body.user;
@@ -148,6 +153,33 @@ async function run() {
         };
         const result = await coll.updateOne({_id: id}, updateDoc, { upsert: true });
         res.send(result);
+    });
+
+    app.post('/create-payment-intent', async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ['card']
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    }); 
+
+    app.post('/create-premium', async (req, res) => {
+      const data = req.body;
+      const result = await collPremium.insertOne(data);
+      res.send(result);
+    });
+
+    app.get('/premium', async (req, res) => {
+      const email = req.query.email;
+      const result = await collPremium.findOne({ email: email });
+      res.send(result);
     });
   } 
   finally {
